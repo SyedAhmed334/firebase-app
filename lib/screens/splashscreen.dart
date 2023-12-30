@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_const_constructors_in_immutables
 
 import 'package:firebase_app/screens/loginscreen.dart';
+import 'package:firebase_app/services/splashscreenservices.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(seconds: 5),() => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),)),);
+    Future.delayed(Duration(seconds: 3),() => SplashServices().isLogin(context));
   }
   @override
   Widget build(BuildContext context) {

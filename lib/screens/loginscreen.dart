@@ -32,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: height*0.20,),
+            SizedBox(height: height*0.13,),
             Column(
               children: [
                 TextFormField(

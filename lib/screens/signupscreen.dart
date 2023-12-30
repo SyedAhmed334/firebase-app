@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_app/screens/loginscreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final lastNameController = TextEditingController();
   bool loading = false;
   final auth = FirebaseAuth.instance;
+  final firestore = FirebaseFirestore.instance.collection('User Data');
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +77,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         setState(() {
                           loading = false;
                         });
+                        firestore.doc(auth.currentUser!.uid).set({
+                          'firstname': firstNameController.text,
+                          'lastname': lastNameController.text,
+                          'email': emailController.text,
+                          'password': passwordController.text,
+                        }).then((value){
+                          Utils().showToast('Uploaded data on firestore');
+                        }).onError((error, stackTrace) {Utils().showToast(error.toString());});
                         Navigator.pushReplacement(context, MaterialPageRoute(
                           builder: (context) => HomeScreen(),
                         ),
@@ -86,7 +96,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     });
                     Utils().showToast(error.toString());
                   });
-                }, title: 'Signup'),
+                }, title: 'Signup',loading: loading,),
               ],
             ),
             Spacer(),
