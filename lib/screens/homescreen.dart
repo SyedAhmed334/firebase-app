@@ -25,15 +25,21 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> fetchData () async{
     userData = await FirebaseFirestore.instance.collection('User Data').doc(auth.currentUser!.uid.toString()).get();
   }
+
+  void updateControllers(){
+    final Map<String, dynamic> map = userData!.data() as Map<String, dynamic>;
+    firstNameController.text = map['firstname'];
+    lastNameController.text = map['lastname'];
+    emailController.text = map['email'];
+    setState(() {
+    });
+  }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     fetchData().then((value){
-      final Map<String, dynamic> map = userData!.data() as Map<String, dynamic>;
-      firstNameController.text = map['firstname'];
-      lastNameController.text = map['lastname'];
-      emailController.text = map['email'];
+    updateControllers();
     });
   }
   @override
@@ -120,6 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.amber),),onPressed: (){
                 setState(() {
                   isEditable = false;
+                  updateControllers();
                 });
               }, child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: width*0.05),
