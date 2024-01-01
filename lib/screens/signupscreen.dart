@@ -30,6 +30,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final height = MediaQuery.sizeOf(context).height;
     final width = MediaQuery.sizeOf(context).width;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(centerTitle: true,title: Text('Signup'),),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: width*0.06),
@@ -37,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: height*0.07,),
+            SizedBox(height: height*0.18,),
             Column(
               children: [
                 TextFormField(

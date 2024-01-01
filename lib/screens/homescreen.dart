@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_app/providers/data_provider.dart';
 import 'package:firebase_app/screens/loginscreen.dart';
 import 'package:firebase_app/widgets/roundbutton.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -18,38 +20,39 @@ class _HomeScreenState extends State<HomeScreen> {
   final emailController = TextEditingController();
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
-  // bool isEnabled = false;
   bool isEditable = false;
-  final fireStore = FirebaseFirestore.instance.collection('User Data');
-  DocumentSnapshot? userData;
-  Future<void> fetchData () async{
-    userData = await FirebaseFirestore.instance.collection('User Data').doc(auth.currentUser!.uid.toString()).get();
-  }
 
   void updateControllers(){
-    final Map<String, dynamic> map = userData!.data() as Map<String, dynamic>;
+    final map = Provider.of<DataProvider>(context,listen: false).userData;
     firstNameController.text = map['firstname'];
     lastNameController.text = map['lastname'];
     emailController.text = map['email'];
-    setState(() {
+  }
+
+
+  Future<void> fetchUserData() async{
+    final provider = Provider.of<DataProvider>(context,listen: false);
+    provider.fetchData().then((value){
+      updateControllers();
     });
   }
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    fetchData().then((value){
-    updateControllers();
+    Future.delayed(Duration.zero, () {
+      fetchUserData();
     });
   }
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height;
     final width = MediaQuery.sizeOf(context).width;
+    final provider = Provider.of<DataProvider>(context,listen: false);
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(centerTitle: true,title: Text('${firstNameController.text}\'s Profile'),
+      appBar: AppBar(centerTitle: true,title: Text('My Profile'),
         actions: [
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -62,83 +65,76 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: width*0.06),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: height*0.07,),
-            Text('First Name',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-            TextFormField(
-              controller: firstNameController,
-              enabled: isEditable,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300),),
+
+        child: Consumer<DataProvider>(builder: (context, value, child){
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: height*0.07,),
+              Text('First Name',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+              TextFormField(
+                controller: firstNameController,
+                enabled: provider.isEditable,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300),),
+                ),
+                onFieldSubmitted: (val){
+                  firstNameController.text = val;
+                },
               ),
-              onFieldSubmitted: (val){
-                firstNameController.text = val;
-              },
-            ),
-            SizedBox(height: height*0.02,),
-            Text('Last Name',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-            TextFormField(
-              controller: lastNameController,
-              enabled: isEditable,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300),),
+              SizedBox(height: height*0.02,),
+              Text('Last Name',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+              TextFormField(
+                controller: lastNameController,
+                enabled: provider.isEditable,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300),),
+                ),
+                onFieldSubmitted: (val){
+                  lastNameController.text = val;
+                },
               ),
-              onFieldSubmitted: (val){
-                lastNameController.text = val;
-              },
-            ),
-            SizedBox(height: height*0.02,),
-            Text('Email',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-            TextFormField(
-              controller: emailController,
-              enabled: isEditable,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300),),
+              SizedBox(height: height*0.02,),
+              Text('Email',style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
+              TextFormField(
+                controller: emailController,
+                enabled: provider.isEditable,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey.shade300),),
+                ),
+                onFieldSubmitted: (val){
+                  emailController.text = val;
+                },
               ),
-              onFieldSubmitted: (val){
-                emailController.text = val;
-              },
-            ),
-            SizedBox(height: height*0.05,),
-            isEditable ? Row(mainAxisAlignment: MainAxisAlignment.end,children: [
-              ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.amber),),onPressed: (){
-                setState(() {
-                  isEditable = false;
-                });
-                fireStore.doc(auth.currentUser!.uid).set(
-                  {
-                  'firstname' : firstNameController.text,
-                  'lastname' : lastNameController.text,
-                  'email' : emailController.text,
-                  }
-                );
-              }, child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                child: Text('Save',style: TextStyle(color: Colors.black),),
-              ),),
-              SizedBox(width: width*0.02 ,),
-              ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.amber),),onPressed: (){
-                setState(() {
-                  isEditable = false;
+              SizedBox(height: height*0.05,),
+              provider.isEditable ? Row(mainAxisAlignment: MainAxisAlignment.end,children: [
+                ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.amber),),onPressed: (){
+                  provider.isNotEditable();
+                  provider.setData(firstNameController.text, lastNameController.text, emailController.text);
+                }, child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                  child: Text('Save',style: TextStyle(color: Colors.black),),
+                ),),
+                SizedBox(width: width*0.02 ,),
+                ElevatedButton(style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.amber),),onPressed: (){
+                  provider.isNotEditable();
                   updateControllers();
-                });
-              }, child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: width*0.05),
-                child: Text('Cancel',style: TextStyle(color: Colors.black),),
-              ),),
-            ],) :RoundButton(onTap: (){
-              setState(() {
-                isEditable = true;
-              });
-            }, title: 'Edit Profile')
-          ],
-        ),
+                }, child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: width*0.05),
+                  child: Text('Cancel',style: TextStyle(color: Colors.black),),
+                ),),
+              ],) :RoundButton(onTap: (){
+                provider.editable();
+                provider.fetchData();
+              }, title: 'Edit Profile')
+
+            ],
+          );
+        },),
       ),
     );
   }
