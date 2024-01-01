@@ -31,84 +31,116 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final width = MediaQuery.sizeOf(context).width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(centerTitle: true,title: Text('Signup'),),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Signup'),
+      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width*0.06),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.06),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: height*0.18,),
+            SizedBox(
+              height: height * 0.18,
+            ),
             Column(
               children: [
                 TextFormField(
                   controller: firstNameController,
                   decoration: InputDecoration(
                     hintText: 'First Name',
-                  ),),
-                SizedBox(height: height*0.02,),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
                 TextFormField(
                   controller: lastNameController,
                   decoration: InputDecoration(
                     hintText: 'Last Name',
-                  ),),
-                SizedBox(height: height*0.02,),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
                 TextFormField(
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Enter your email',
-                  ),),
-                SizedBox(height: height*0.02,),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
                 TextFormField(
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
-                  ),),
-                SizedBox(
-                  height: height*0.05,
+                  ),
                 ),
-                RoundButton(onTap: (){
-                  setState(() {
-                    loading = true;
-                  });
-                  auth.createUserWithEmailAndPassword(email: emailController.text, password: passwordController.text).then(
-                          (value) {
-                        setState(() {
-                          loading = false;
-                        });
-                        firestore.doc(auth.currentUser!.uid).set({
-                          'firstname': firstNameController.text,
-                          'lastname': lastNameController.text,
-                          'email': emailController.text,
-                          'password': passwordController.text,
-                        }).then((value){
-                          Utils().showToast('Uploaded data on firestore');
-                        }).onError((error, stackTrace) {Utils().showToast(error.toString());});
-                        Navigator.pushReplacement(context, MaterialPageRoute(
+                SizedBox(
+                  height: height * 0.05,
+                ),
+                RoundButton(
+                  onTap: () {
+                    setState(() {
+                      loading = true;
+                    });
+                    auth
+                        .createUserWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text)
+                        .then((value) {
+                      setState(() {
+                        loading = false;
+                      });
+                      firestore.doc(auth.currentUser!.uid).set({
+                        'firstname': firstNameController.text,
+                        'lastname': lastNameController.text,
+                        'email': emailController.text,
+                        'password': passwordController.text,
+                      }).then((value) {
+                        Utils().showToast('Uploaded data on firestore');
+                      }).onError((error, stackTrace) {
+                        Utils().showToast(error.toString());
+                      });
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
                           builder: (context) => HomeScreen(),
                         ),
-                        );
-                      }
-                  ).onError((error, stackTrace){
-                    setState(() {
-                      loading = false;
+                      );
+                    }).onError((error, stackTrace) {
+                      setState(() {
+                        loading = false;
+                      });
+                      Utils().showToast(error.toString());
                     });
-                    Utils().showToast(error.toString());
-                  });
-                }, title: 'Signup',loading: loading,),
+                  },
+                  title: 'Signup',
+                  loading: loading,
+                ),
               ],
             ),
             Spacer(),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('Already a user?'),
-                TextButton(onPressed: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen(),),);
-                }, child: Text('Login!'),),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LoginScreen(),
+                      ),
+                    );
+                  },
+                  child: Text('Login!'),
+                ),
               ],
             ),
           ],

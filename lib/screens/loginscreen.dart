@@ -16,24 +16,30 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
- final emailController = TextEditingController();
- final passwordController = TextEditingController();
- final auth = FirebaseAuth.instance;
- bool loading = false;
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final auth = FirebaseAuth.instance;
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height;
     final width = MediaQuery.sizeOf(context).width;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(centerTitle: true,title: Text('Login'),),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Login'),
+      ),
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: width*0.06),
+        padding: EdgeInsets.symmetric(horizontal: width * 0.06),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: height*0.25,),
+            SizedBox(
+              height: height * 0.25,
+            ),
             Column(
               children: [
                 TextFormField(
@@ -41,52 +47,70 @@ class _LoginScreenState extends State<LoginScreen> {
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'Enter your email',
-                  ),),
-                SizedBox(height: height*0.02,),
+                  ),
+                ),
+                SizedBox(
+                  height: height * 0.02,
+                ),
                 TextFormField(
                   controller: passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     hintText: 'Enter your password',
-                  ),),
-                SizedBox(
-                  height: height*0.05,
+                  ),
                 ),
-                RoundButton(onTap: (){
-                  setState(() {
-                    loading = true;
-                  });
-                  auth.signInWithEmailAndPassword(email: emailController.text, password: passwordController.text).then(
-                          (value) {
-                            setState(() {
-                              loading = false;
-                            });
-                        Navigator.pushReplacement(context, MaterialPageRoute(
+                SizedBox(
+                  height: height * 0.05,
+                ),
+                RoundButton(
+                  onTap: () {
+                    setState(() {
+                      loading = true;
+                    });
+                    auth
+                        .signInWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text)
+                        .then((value) {
+                      setState(() {
+                        loading = false;
+                      });
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
                           builder: (context) => HomeScreen(),
                         ),
-                        );
-                      }
-                  ).onError((error, stackTrace){
-                    setState(() {
-                      loading = false;
+                      );
+                    }).onError((error, stackTrace) {
+                      setState(() {
+                        loading = false;
+                      });
+                      Utils().showToast(error.toString());
                     });
-                            Utils().showToast(error.toString());
-                  });
-
-                }, title: 'Login',loading: loading,),
+                  },
+                  title: 'Login',
+                  loading: loading,
+                ),
               ],
             ),
             Spacer(),
-
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('New here?'),
-                  TextButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpScreen(),),);
-                  }, child: Text('Signup!'),),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SignUpScreen(),
+                        ),
+                      );
+                    },
+                    child: Text('Signup!'),
+                  ),
                 ],
               ),
             ),

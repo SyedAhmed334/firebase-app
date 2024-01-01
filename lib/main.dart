@@ -8,18 +8,21 @@ import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 
-void main() async{
+void main() async {
   runApp(
-    MultiProvider(providers: [
-      ChangeNotifierProvider(create: (context) => DataProvider(),),
-    ],
-    child: MyApp(),),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => DataProvider(),
+        ),
+      ],
+      child: MyApp(),
+    ),
   );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   WidgetsFlutterBinding.ensureInitialized();
-
 }
 
 class MyApp extends StatelessWidget {
@@ -39,4 +42,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
