@@ -197,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       )
                     : RoundButton(
                         onTap: () {
-                          provider.editable();
+                          provider.isNotEditable();
                           provider.fetchData();
                         },
                         title: 'Edit Profile')

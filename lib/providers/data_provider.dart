@@ -34,12 +34,8 @@ class DataProvider extends ChangeNotifier {
   }
 
   void isNotEditable() {
-    _isEditable = false;
+    _isEditable = !_isEditable;
     notifyListeners();
   }
 
-  void editable() {
-    _isEditable = true;
-    notifyListeners();
-  }
 }
